@@ -37,7 +37,7 @@
 -- 	Subtraction Loop
 --	00B		beq r0,r4,005	-- Branch if equal to sentinel val 0
 --	00C		sub r3<-r3,r4	-- Subtract sum - counter
--- 	00D    	out r3          		-- Display r3
+-- 	00D		out r3          		-- Display r3
 --	00E		sub r4<-r4,r1 	-- Sub counter - 1
 --	00F		beq r0,r0,00B	-- Branch if equal always loops
 --
