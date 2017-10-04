@@ -1,0 +1,210 @@
+--	Jesse Lew
+--	Hex File for Fibonacci sequence
+--
+--
+-- Instruction Format:
+--
+-- R-Type: <6-bit Opcode>,<5-bit rs>,<5-bit rt>,<5-bit rd>,<5-bit shamt>,<6-bit funct>
+--    bits   (31-26)       (25-21)     (20-16)    (15-11)     (10-6)       (5-0)
+--
+-- I-Type: <6-bit Opcode>,<5-bit rs>,<5-bit rt>,<16-bit Address> 
+--   bits     (31-26)      (25-21)   (20-16)     (15-0)
+--
+--
+-- File format:
+-- Hex Address 3 hex nibbles (12 bits) : bit31 ...... bit0;
+
+--	Overall program structure:
+-- 	r0 is our sentinel value 0
+-- 	r1 is our increment/decrement 1
+--	r2 is our sentinel value 20
+--	r3 is our sum
+--	r4 is our counter
+--	Addr	Mnemonics
+--	000		lw r0,0		-- Load data memory 0 (offset 0)-> r0
+-- 	001		lw r1,1		-- Load data memory 1 (offset 4)-> r1
+--	002		lw r2,2		-- Load data memory 2 (offset 8)-> r2
+--	003		lw r3,0		-- Load data memory 0 (offset 0)-> r3
+--	004		lw r4,0		-- Load data memory 0 (offset 0)-> r4
+-- 	Addition Loop
+--	005		beq r2,r4,00A	-- Branch if equal to sentinel val 20
+--	006		add r3<-r3,r4	-- Add sum + counter
+-- 	007		out r3         	-- Display r3
+--	008		add r4<-r4,r1 	-- Add counter + 1
+--	009		beq r0,r0,005	-- Branch if equal always loops
+-- 	Blink
+-- 	00A		out r0		-- Display r0, Blink
+-- 	Subtraction Loop
+--	00B		beq r0,r4,005	-- Branch if equal to sentinel val 0
+--	00C		sub r3<-r3,r4	-- Subtract sum - counter
+-- 	00D    	out r3          		-- Display r3
+--	00E		sub r4<-r4,r1 	-- Sub counter - 1
+--	00F		beq r0,r0,00B	-- Branch if equal always loops
+--
+----------------------------------------------------------------------
+WIDTH=32;
+DEPTH=1024;
+ADDRESS_RADIX=HEX;
+DATA_RADIX=BIN;
+CONTENT BEGIN
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    000       :    10001100000000000000000000000000;
+--                 |____||___||___||______________|
+--                   |     |    |          |
+--                 op=lw, rs=0, rt=0,    addr=0 (offset 0)
+--	000		lw r0,0		-- Load data memory 0 -> r0
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    001       :    10001100000000010000000000000100;
+--                 |____||___||___||______________|
+--                   |     |    |          |
+--                 op=ld, rs=0, rt=1,    addr=1 (offset 4)
+--	001		lw r1,1		-- Load data memory 1 -> r1
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    002       :    10001100000000100000000000001000;
+--                 |____||___||___||______________|
+--                   |     |    |          |
+--                 op=ld, rs=0, rt=2,    addr=2 (offset 8) 
+--	002		lw r2,2		-- Load data memory 2 -> r2
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    003       :    10001100000000110000000000000000;
+--                 |____||___||___||______________|
+--                   |     |    |          |
+--                 op=lw, rs=0, rt=3,    addr=0 (offset 0)
+--	003		lw r3,0		-- Load data memory 0 -> r3
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    004       :    10001100000001000000000000000000;
+--                 |____||___||___||______________|
+--                   |     |    |          |
+--                 op=lw, rs=0, rt=4,    addr=0 (offset 0)
+--	004		lw r4,0		-- Load data memory 0 -> r4
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    005       :    00010000010001000000000000000110;
+--                 |____||___||___||______________|
+--                   |     |    |          |
+--                  beq, rs=2, rt=4,   offset=6 (00A)
+-- This is a beq, branch if equal instruction
+--	005		beq r2,r4,00A (+5)	-- Branch if equal to sentinel 20
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    006       :    00000000011001000001100000100000;
+--                 |____||___||___||___||___||____|
+--                   |     |    |    |    |    |         
+--                 R-type,rs=3,rt=4,rd=3,---,f=add 
+--	006		add r3<-r3,r4	-- Add sum + counter
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    007       :    10110000011000000000000000000000;
+--                 |____||___||___________________|
+--                   |     |           |
+--                  out, rs=3, XXXXXXXXXXXXXXXXXXX
+-- This is an out instruction
+--	007		out r3
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    008       :    00000000100000010010000000100000;
+--                 |____||___||___||___||___||____|
+--                   |     |    |    |    |    |         
+--                 R-type,rs=4,rt=1,rd=4,---,f=add 
+--	008		add r4<-r4,r1	-- Add counter + 1
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    009       :    00010000000000001111111111111011;
+--                 |____||___||___||______________|
+--                   |     |    |          |
+--                  beq, rs=0, rt=0,   offset=-5 (005)
+-- This is a beq, branch if equal instruction
+--	009		beq r0,r0,005 (-5)	-- Branch if equal always loops
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    00A       :    10110000000000000000000000000000;
+--                 |____||___||___________________|
+--                   |     |           |
+--                  out, rs=0, XXXXXXXXXXXXXXXXXXX
+-- This is an out instruction
+--	00A		out r0
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    00B       :    00010000000001001111111111111001;
+--                 |____||___||___||______________|
+--                   |     |    |          |
+--                  beq, rs=0, rt=4,   offset=-7 (005)
+-- This is a beq, branch if equal instruction
+--	00B		beq r0,r4,005 (-7)	-- Branch if equal to sentinel 0
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    00C       :    00000000011001000001100000100010;
+--                 |____||___||___||___||___||____|
+--                   |     |    |    |    |    |         
+--                 R-type,rs=3,rt=4,rd=3,---,f=sub
+--	00C		sub r3<-r3,r4	-- Subtract sum - counter
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    00D       :    10110000011000000000000000000000;
+--                 |____||___||___________________|
+--                   |     |           |
+--                  out, rs=3, XXXXXXXXXXXXXXXXXXX
+-- This is an out instruction
+--	00D		out r3
+
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    00E       :    00000000100000010010000000100010;
+--                 |____||___||___||___||___||____|
+--                   |     |    |    |    |    |         
+--                 R-type,rs=4,rt=1,rd=4,---,f=sub
+--	00E		sub r4<-r4,r1	-- Subtract counter - 1
+
+----------------------------------------------------------------------
+--Hex Address :   bit31...........bit15..........bit0;
+--   |             |               |              |
+    00F       :    00010000000000001111111111111011;
+--                 |____||___||___||______________|
+--                   |     |    |          |
+--                  beq, rs=0, rt=0,   offset=-5 (00B)
+-- This is a beq, branch if equal instruction
+--	00F		beq r0,r0,00B (-5)	-- Branch if equal always loops
+
+
+END;

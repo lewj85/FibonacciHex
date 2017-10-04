@@ -1,0 +1,27 @@
+--	Jesse Lew
+--	Hex File for Fibonacci sequence
+--
+
+WIDTH=32;
+DEPTH=1024;
+ADDRESS_RADIX=HEX;
+DATA_RADIX=HEX;
+
+CONTENT BEGIN
+
+---------------------------------------------------
+--	Variables used in the program
+--	000	The sentinel value 0
+--	001	The increment/decrement value 1
+--	002	The sentinel value 20
+--	003	The sum 0
+--	004 The counter 0
+--
+---------------------------------------------------
+000 : 00000000;
+001 : 00000001;
+002 : 00010100;
+003 : 00000000;
+004 : 00000000;
+
+END;
